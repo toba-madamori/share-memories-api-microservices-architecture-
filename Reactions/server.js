@@ -9,7 +9,7 @@ const port = process.env.PORT
 const start = async () => {
     try {
         await connectDb(process.env.MONGO_URI)
-        app.listen(port, () => logger.info(`server is running on port ${port}`))
+        app.listen(port, () => logger.info(`reactions service is running on port ${port}`))
     } catch (error) {
         logger.error(error.message)
     }
