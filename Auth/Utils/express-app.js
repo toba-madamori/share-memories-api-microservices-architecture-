@@ -5,6 +5,7 @@ require('express-async-errors')
 // app setup
 const express = require('express')
 const app = express()
+const userApi = require('../Api/Endpoints/user.auth')
 
 // extra security packages
 const cors = require('cors')
@@ -31,6 +32,9 @@ app.use(xss())
 app.get('/', (req, res) => {
     res.send('<h4>Authentication service is up and running at </h4><a href="">Documentation</a>')
 })
+
+// user api
+userApi(app)
 
 // routes
 
