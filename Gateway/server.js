@@ -6,7 +6,6 @@ const cors = require('cors')
 const proxy = require('express-http-proxy')
 
 app.use(cors())
-app.use(express.json())
 
 app.use('/api/v1/auth', proxy('http://localhost:8001'))
 app.use('/api/v1/users', proxy('http://localhost:8002'))
