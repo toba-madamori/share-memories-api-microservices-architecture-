@@ -16,10 +16,16 @@ class UserService {
     }
 
     async SignUp (input) {
-        const { name, email, password } = input
+        let { name, email, password, avatar } = input
+        let result = {}
 
-        const result = await cloudinary.uploader.upload(defaultAvatarPath)
-        const avatar = result.secure_url
+        if (avatar) {
+            result = await cloudinary.uploader.upload(avatar.path, { folder: 'avatar_upload' })
+        } else {
+            result = await cloudinary.uploader.upload(defaultAvatarPath, { folder: 'avatar_upload' })
+        }
+
+        avatar = result.secure_url
         const cloudinary_id = result.public_id
 
         const userPassword = await hashPassword(password)
