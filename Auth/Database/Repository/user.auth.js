@@ -33,6 +33,14 @@ class UserRepository {
 
         return user
     }
+
+    async findUserEmail ({ email }) {
+        const user = await UserModel.findOne({ email })
+
+        if (!user) throw new NotFoundError('sorry, this user does not exist')
+
+        return user
+    }
 }
 
 module.exports = UserRepository
