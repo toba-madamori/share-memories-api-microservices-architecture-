@@ -20,8 +20,13 @@ const loginSchema = Joi.object().keys({
     password
 })
 
+const forgotSchema = Joi.object().keys({
+    email
+})
+
 module.exports = {
     signupSchema,
     idtokenSchema,
-    loginSchema
+    loginSchema,
+    forgotSchema
 }

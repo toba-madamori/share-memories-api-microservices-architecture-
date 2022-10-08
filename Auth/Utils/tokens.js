@@ -55,8 +55,29 @@ const signAccessToken = (userID) => {
     })
 }
 
+const forgotPasswordToken = (user) => {
+    return new Promise((resolve, reject) => {
+        const payload = {
+            email: user.email,
+            id: user._id
+        }
+        const secret = process.env.JWT_SECRET_FORGOT_PASSWORD + user.password
+        const options = {
+            expiresIn: process.env.JWT_LIFETIME_FORGOT_PASSWORD
+        }
+        jwt.sign(payload, secret, options, (err, token) => {
+            if (err) {
+                logger.error(err.message)
+                reject(new InternalServerError('something went wrong, please try again later'))
+            }
+            resolve(token)
+        })
+    })
+}
+
 module.exports = {
     confirmRegistrationToken,
     verifyConfirmRegistrationToken,
-    signAccessToken
+    signAccessToken,
+    forgotPasswordToken
 }
