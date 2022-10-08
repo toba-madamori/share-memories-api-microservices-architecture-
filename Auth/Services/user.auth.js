@@ -2,7 +2,7 @@
 const { UserRepository } = require('../Database')
 const { hashPassword, validatePassword } = require('../Utils/password')
 const cloudinary = require('../Utils/cloudinary')
-const { confirmRegistrationToken, verifyConfirmRegistrationToken, signAccessToken, forgotPasswordToken } = require('../Utils/tokens')
+const { confirmRegistrationToken, verifyConfirmRegistrationToken, signAccessToken, forgotPasswordToken, verifyForgotPasswordToken } = require('../Utils/tokens')
 const { sendMail } = require('../Utils/mailer')
 const { signupMailOptions } = require('../Templates/email/signupMail')
 const { resetPasswordOptions } = require('../Templates/email/forgotPasswordMail')
@@ -72,6 +72,17 @@ class UserService {
 
         await sendMail(resetPasswordOptions(email, link, user.name))
 
+        return user
+    }
+
+    async resetPassword (input) {
+        const { _id, token, new_password } = input
+        let user = await this.repository.findUser({ _id })
+
+        await verifyForgotPasswordToken(user, token)
+        const newPassword = await hashPassword(new_password)
+
+        user = await this.repository.updatePassword({ _id, newPassword })
         return user
     }
 }
