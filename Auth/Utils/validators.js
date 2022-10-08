@@ -10,6 +10,12 @@ const signupSchema = Joi.object().keys({
     password
 })
 
+const idtokenSchema = Joi.object().keys({
+    id: Joi.string().hex().length(24).pattern(/^[0-9a-fA-F]{24}$/).required(),
+    token: Joi.string().required()
+})
+
 module.exports = {
-    signupSchema
+    signupSchema,
+    idtokenSchema
 }

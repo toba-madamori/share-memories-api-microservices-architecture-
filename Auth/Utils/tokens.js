@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const { InternalServerError } = require('../Errors')
+const { InternalServerError, UnauthenticatedError } = require('../Errors')
 const logger = require('./logger')
 
 const confirmRegistrationToken = (email, _id, password) => {
@@ -22,6 +22,21 @@ const confirmRegistrationToken = (email, _id, password) => {
     })
 }
 
+const verifyConfirmRegistrationToken = (user, token) => {
+    return new Promise((resolve, reject) => {
+        jwt.verify(token, process.env.JWT_SECRET_CONFIRM_REG_TOKEN + user.password, (err, payload) => {
+            if (err) {
+                console.log(err)
+                const message = err.name === 'TokenExpiredError' ? err.message : 'Authentication Invalid'
+                return reject(new UnauthenticatedError(message))
+            }
+            const valid = true
+            resolve(valid)
+        })
+    })
+}
+
 module.exports = {
-    confirmRegistrationToken
+    confirmRegistrationToken,
+    verifyConfirmRegistrationToken
 }
