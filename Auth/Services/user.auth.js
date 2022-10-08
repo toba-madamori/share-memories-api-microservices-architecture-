@@ -2,7 +2,7 @@
 const { UserRepository } = require('../Database')
 const { hashPassword } = require('../Utils/password')
 const cloudinary = require('../Utils/cloudinary')
-const { confirmRegistrationToken } = require('../Utils/tokens')
+const { confirmRegistrationToken, verifyConfirmRegistrationToken } = require('../Utils/tokens')
 const { sendMail } = require('../Utils/mailer')
 const { signupMailOptions } = require('../Templates/email/signupMail')
 const path = require('path')
@@ -38,6 +38,15 @@ class UserService {
         await sendMail(signupMailOptions(email, link, name))
 
         return newUser
+    }
+
+    async verify (input) {
+        const { _id, token } = input
+        let user = await this.repository.findUser({ _id })
+        await verifyConfirmRegistrationToken(user, token)
+
+        user = await this.repository.validateUser({ _id })
+        return user
     }
 }
 
