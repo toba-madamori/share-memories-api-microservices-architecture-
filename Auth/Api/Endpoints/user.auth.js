@@ -1,7 +1,7 @@
 const UserService = require('../../Services/user.auth')
 const { StatusCodes } = require('http-status-codes')
 const validator = require('express-joi-validation').createValidator({})
-const { signupSchema, idtokenSchema, loginSchema } = require('../../Utils/validators')
+const { signupSchema, idtokenSchema, loginSchema, forgotSchema } = require('../../Utils/validators')
 const upload = require('../../Utils/multer')
 
 module.exports = (app) => {
@@ -25,6 +25,12 @@ module.exports = (app) => {
         const { email, password } = req.body
         const accessToken = await service.login({ email, password })
         res.status(StatusCodes.OK).json({ status: 'success', token: accessToken })
+    })
+
+    app.post('/forgot', validator.body(forgotSchema), async (req, res) => {
+        const { email } = req.body
+        await service.forgotPassword({ email })
+        res.status(StatusCodes.OK).json({ status: 'success', msg: 'password reset link sent to email' })
     })
 
     app.get('/whoami', (req, res, next) => {
