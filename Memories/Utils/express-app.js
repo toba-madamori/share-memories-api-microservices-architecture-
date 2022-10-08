@@ -5,6 +5,7 @@ require('express-async-errors')
 // app setup
 const express = require('express')
 const app = express()
+const memoryApi = require('../Api/Endpoints/memories')
 
 // extra security packages
 const cors = require('cors')
@@ -33,6 +34,9 @@ app.get('/', (req, res) => {
 })
 
 // routes
+
+// memory api
+memoryApi(app)
 
 app.use(errorHandler)
 app.use(notFound)
