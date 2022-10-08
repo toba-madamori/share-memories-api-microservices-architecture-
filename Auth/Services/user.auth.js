@@ -2,9 +2,10 @@
 const { UserRepository } = require('../Database')
 const { hashPassword, validatePassword } = require('../Utils/password')
 const cloudinary = require('../Utils/cloudinary')
-const { confirmRegistrationToken, verifyConfirmRegistrationToken, signAccessToken } = require('../Utils/tokens')
+const { confirmRegistrationToken, verifyConfirmRegistrationToken, signAccessToken, forgotPasswordToken } = require('../Utils/tokens')
 const { sendMail } = require('../Utils/mailer')
 const { signupMailOptions } = require('../Templates/email/signupMail')
+const { resetPasswordOptions } = require('../Templates/email/forgotPasswordMail')
 const path = require('path')
 const { UnauthenticatedError } = require('../Errors')
 
@@ -60,6 +61,18 @@ class UserService {
 
         const token = await signAccessToken(user._id)
         return token
+    }
+
+    async forgotPassword (input) {
+        const { email } = input
+        const user = await this.repository.findUserEmail({ email })
+
+        const token = await forgotPasswordToken(user)
+        const link = `${process.env.RESET_PASSWORD_URL}/${user._id}/${token}`
+
+        await sendMail(resetPasswordOptions(email, link, user.name))
+
+        return user
     }
 }
 
