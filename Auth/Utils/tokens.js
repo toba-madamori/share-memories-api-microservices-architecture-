@@ -26,7 +26,7 @@ const verifyConfirmRegistrationToken = (user, token) => {
     return new Promise((resolve, reject) => {
         jwt.verify(token, process.env.JWT_SECRET_CONFIRM_REG_TOKEN + user.password, (err, payload) => {
             if (err) {
-                console.log(err)
+                logger.error(err.message)
                 const message = err.name === 'TokenExpiredError' ? err.message : 'Authentication Invalid'
                 return reject(new UnauthenticatedError(message))
             }
@@ -36,7 +36,27 @@ const verifyConfirmRegistrationToken = (user, token) => {
     })
 }
 
+const signAccessToken = (userID) => {
+    return new Promise((resolve, reject) => {
+        const payload = {
+            id: userID
+        }
+        const secret = process.env.JWT_SECRET_ACCESS_TOKEN
+        const options = {
+            expiresIn: process.env.JWT_LIFETIME_ACCESS_TOKEN
+        }
+        jwt.sign(payload, secret, options, (err, token) => {
+            if (err) {
+                logger.error(err.message)
+                reject(new InternalServerError('something went wrong, please try again later'))
+            }
+            resolve(token)
+        })
+    })
+}
+
 module.exports = {
     confirmRegistrationToken,
-    verifyConfirmRegistrationToken
+    verifyConfirmRegistrationToken,
+    signAccessToken
 }

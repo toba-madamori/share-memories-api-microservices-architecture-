@@ -16,6 +16,23 @@ const hashPassword = (password) => {
     })
 }
 
+const validatePassword = (password, hash) => {
+    return new Promise((resolve, reject) => {
+        try {
+            const isMatch = bcrypt.compareSync(password, hash)
+            if (isMatch) {
+                resolve(true)
+            } else {
+                resolve(false)
+            }
+        } catch (error) {
+            logger.error(error.message)
+            reject(new InternalServerError('something went wrong, please try again later'))
+        }
+    })
+}
+
 module.exports = {
-    hashPassword
+    hashPassword,
+    validatePassword
 }

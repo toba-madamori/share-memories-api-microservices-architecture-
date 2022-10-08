@@ -15,7 +15,13 @@ const idtokenSchema = Joi.object().keys({
     token: Joi.string().required()
 })
 
+const loginSchema = Joi.object().keys({
+    email,
+    password
+})
+
 module.exports = {
     signupSchema,
-    idtokenSchema
+    idtokenSchema,
+    loginSchema
 }
