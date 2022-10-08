@@ -1,7 +1,7 @@
 const UserService = require('../../Services/user.auth')
 const { StatusCodes } = require('http-status-codes')
 const validator = require('express-joi-validation').createValidator({})
-const { signupSchema, idtokenSchema } = require('../../Utils/validators')
+const { signupSchema, idtokenSchema, loginSchema } = require('../../Utils/validators')
 const upload = require('../../Utils/multer')
 
 module.exports = (app) => {
@@ -19,6 +19,12 @@ module.exports = (app) => {
         const { id: _id, token } = req.params
         await service.verify({ _id, token })
         res.status(StatusCodes.OK).json({ status: 'success', msg: 'verification complete' })
+    })
+
+    app.post('/login', validator.body(loginSchema), async (req, res) => {
+        const { email, password } = req.body
+        const accessToken = await service.login({ email, password })
+        res.status(StatusCodes.OK).json({ status: 'success', token: accessToken })
     })
 
     app.get('/whoami', (req, res, next) => {
