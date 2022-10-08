@@ -75,9 +75,24 @@ const forgotPasswordToken = (user) => {
     })
 }
 
+const verifyForgotPasswordToken = (user, token) => {
+    return new Promise((resolve, reject) => {
+        jwt.verify(token, process.env.JWT_SECRET_FORGOT_PASSWORD + user.password, (err, payload) => {
+            if (err) {
+                logger.error(err.message)
+                const message = err.name === 'TokenExpiredError' ? err.message : 'Authentication Invalid'
+                return reject(new UnauthenticatedError(message))
+            }
+            const valid = true
+            resolve(valid)
+        })
+    })
+}
+
 module.exports = {
     confirmRegistrationToken,
     verifyConfirmRegistrationToken,
     signAccessToken,
-    forgotPasswordToken
+    forgotPasswordToken,
+    verifyForgotPasswordToken
 }

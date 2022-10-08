@@ -24,9 +24,14 @@ const forgotSchema = Joi.object().keys({
     email
 })
 
+const resetSchema = Joi.object().keys({
+    new_password: password
+})
+
 module.exports = {
     signupSchema,
     idtokenSchema,
     loginSchema,
-    forgotSchema
+    forgotSchema,
+    resetSchema
 }
