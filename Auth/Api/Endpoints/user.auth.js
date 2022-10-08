@@ -1,7 +1,8 @@
+/* eslint-disable camelcase */
 const UserService = require('../../Services/user.auth')
 const { StatusCodes } = require('http-status-codes')
 const validator = require('express-joi-validation').createValidator({})
-const { signupSchema, idtokenSchema, loginSchema, forgotSchema } = require('../../Utils/validators')
+const { signupSchema, idtokenSchema, loginSchema, forgotSchema, resetSchema } = require('../../Utils/validators')
 const upload = require('../../Utils/multer')
 
 module.exports = (app) => {
@@ -31,6 +32,13 @@ module.exports = (app) => {
         const { email } = req.body
         await service.forgotPassword({ email })
         res.status(StatusCodes.OK).json({ status: 'success', msg: 'password reset link sent to email' })
+    })
+
+    app.patch('/reset/:id/:token', validator.params(idtokenSchema), validator.body(resetSchema), async (req, res) => {
+        const { id: _id, token } = req.params
+        const { new_password } = req.body
+        await service.resetPassword({ _id, token, new_password })
+        res.status(StatusCodes.OK).json({ status: 'success', msg: 'password reset complete' })
     })
 
     app.get('/whoami', (req, res, next) => {
