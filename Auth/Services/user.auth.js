@@ -1,11 +1,12 @@
 /* eslint-disable camelcase */
 const { UserRepository } = require('../Database')
-const { hashPassword } = require('../Utils/password')
+const { hashPassword, validatePassword } = require('../Utils/password')
 const cloudinary = require('../Utils/cloudinary')
-const { confirmRegistrationToken, verifyConfirmRegistrationToken } = require('../Utils/tokens')
+const { confirmRegistrationToken, verifyConfirmRegistrationToken, signAccessToken } = require('../Utils/tokens')
 const { sendMail } = require('../Utils/mailer')
 const { signupMailOptions } = require('../Templates/email/signupMail')
 const path = require('path')
+const { UnauthenticatedError } = require('../Errors')
 
 const defaultAvatarPath = path.join(__dirname, '../public/default-profile-image.png')
 
@@ -47,6 +48,18 @@ class UserService {
 
         user = await this.repository.validateUser({ _id })
         return user
+    }
+
+    async login (input) {
+        const { email, password } = input
+        const user = await this.repository.findUserEmail({ email })
+        const isMatch = await validatePassword(password, user.password)
+
+        if (!isMatch) throw new UnauthenticatedError('Invalid Credentials')
+        if (!user.verified) throw new UnauthenticatedError('Incomplete Registration Error')
+
+        const token = await signAccessToken(user._id)
+        return token
     }
 }
 
