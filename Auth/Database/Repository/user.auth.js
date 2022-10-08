@@ -41,6 +41,11 @@ class UserRepository {
 
         return user
     }
+
+    async updatePassword ({ _id, newPassword }) {
+        const user = await UserModel.findByIdAndUpdate({ _id }, { password: newPassword })
+        return user
+    }
 }
 
 module.exports = UserRepository
