@@ -14,6 +14,15 @@ class ReactionsService {
 
         return newComment
     }
+
+    async updateComment (input) {
+        const { comment, userid, commentid } = input
+
+        await this.commentRepository.findComment({ _id: commentid })
+
+        const updatedComment = await this.commentRepository.updateComment({ comment, userid, commentid })
+        return updatedComment
+    }
 }
 
 module.exports = ReactionsService
