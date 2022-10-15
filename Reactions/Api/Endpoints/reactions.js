@@ -17,6 +17,15 @@ module.exports = (app) => {
         res.status(StatusCodes.CREATED).json({ status: 'success', comment })
     })
 
+    app.patch('/comment/update/:id', authMiddleware, validator.params(idSchema), validator.body(newCommentSchema), async (req, res) => {
+        let { comment } = req.body
+        const { id: commentid } = req.params
+        const { userID: userid } = req.user
+
+        comment = await service.updateComment({ comment, userid, commentid })
+        res.status(StatusCodes.OK).json({ status: 'success', comment })
+    })
+
     app.get('/whoami', (req, res, next) => {
         return res.status(StatusCodes.OK).json({ msg: '/reactions : I am Reactions Service' })
     })
