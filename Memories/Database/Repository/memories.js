@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 const MemoryModel = require('../Models/memories')
+const { NotFoundError } = require('../../Errors')
 
 // Dealing with data base operations
 class MemoryRepository {
@@ -14,6 +15,14 @@ class MemoryRepository {
 
         const newMemory = await mem.save()
         return newMemory
+    }
+
+    async findMemory ({ _id }) {
+        const memory = await MemoryModel.findById(_id)
+
+        if (!memory) throw new NotFoundError('sorry, this memory does not exist')
+
+        return memory
     }
 }
 
