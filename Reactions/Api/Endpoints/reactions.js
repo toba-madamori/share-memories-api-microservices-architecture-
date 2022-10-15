@@ -34,6 +34,13 @@ module.exports = (app) => {
         res.status(StatusCodes.OK).json({ status: 'success', msg: 'comment deleted' })
     })
 
+    app.get('/comment/:id', authMiddleware, validator.params(idSchema), async (req, res) => {
+        const { id: memoryid } = req.params
+
+        const comments = await service.getComments({ memoryid })
+        res.status(StatusCodes.OK).json({ status: 'success', comments })
+    })
+
     app.get('/whoami', (req, res, next) => {
         return res.status(StatusCodes.OK).json({ msg: '/reactions : I am Reactions Service' })
     })
