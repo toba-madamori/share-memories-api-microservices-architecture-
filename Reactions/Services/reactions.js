@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 const { CommentRepository } = require('../Database')
+const logger = require('../Utils/logger')
 
 // All Business logic will be here
 class ReactionsService {
@@ -33,6 +34,21 @@ class ReactionsService {
         const { memoryid } = input
         const comments = await this.commentRepository.getComments({ memoryid })
         return comments
+    }
+
+    async SubscribeEvents (payload) {
+        logger.info('============= Triggering Reactions Events =============')
+
+        const { event, data } = payload
+
+        const { memoryid } = data
+
+        switch (event) {
+        case 'GET_COMMENTS':
+            return await this.getComments({ memoryid })
+        default:
+            break
+        }
     }
 }
 
