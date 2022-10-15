@@ -31,6 +31,11 @@ class CommentRepository {
     async deleteComment ({ _id, userid }) {
         return await CommentModel.findOneAndDelete({ _id, userid })
     }
+
+    async getComments ({ memoryid }) {
+        const comments = await CommentModel.find({ memoryid }).select('-createdAt -updatedAt -__v')
+        return comments
+    }
 }
 
 module.exports = CommentRepository
