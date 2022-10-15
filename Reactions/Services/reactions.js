@@ -23,6 +23,11 @@ class ReactionsService {
         const updatedComment = await this.commentRepository.updateComment({ comment, userid, commentid })
         return updatedComment
     }
+
+    async deleteComment (input) {
+        const { _id, userid } = input
+        return await this.commentRepository.deleteComment({ _id, userid })
+    }
 }
 
 module.exports = ReactionsService
