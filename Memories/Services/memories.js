@@ -23,6 +23,13 @@ class MemoryService {
 
         return newMemory
     }
+
+    async getMemory (input) {
+        const { memoryid } = input
+
+        const memory = await this.repository.findMemory({ _id: memoryid })
+        return memory
+    }
 }
 
 module.exports = MemoryService
