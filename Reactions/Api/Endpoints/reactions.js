@@ -26,6 +26,14 @@ module.exports = (app) => {
         res.status(StatusCodes.OK).json({ status: 'success', comment })
     })
 
+    app.delete('/comment/delete/:id', authMiddleware, validator.params(idSchema), async (req, res) => {
+        const { id: _id } = req.params
+        const { userID: userid } = req.user
+
+        await service.deleteComment({ _id, userid })
+        res.status(StatusCodes.OK).json({ status: 'success', msg: 'comment deleted' })
+    })
+
     app.get('/whoami', (req, res, next) => {
         return res.status(StatusCodes.OK).json({ msg: '/reactions : I am Reactions Service' })
     })
