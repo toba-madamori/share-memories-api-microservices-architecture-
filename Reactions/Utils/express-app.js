@@ -5,6 +5,7 @@ require('express-async-errors')
 // app setup
 const express = require('express')
 const app = express()
+const reactionsApi = require('../Api/Endpoints/reactions')
 
 // extra security packages
 const cors = require('cors')
@@ -29,10 +30,13 @@ app.use(xss())
 
 // test-route
 app.get('/', (req, res) => {
-    res.send('<h4>Reactions service is up and running at </h4><a href="">Documentation</a>')
+    res.send('<h4>Reaction service is up and running at </h4><a href="">Documentation</a>')
 })
 
 // routes
+
+// memory api
+reactionsApi(app)
 
 app.use(errorHandler)
 app.use(notFound)
