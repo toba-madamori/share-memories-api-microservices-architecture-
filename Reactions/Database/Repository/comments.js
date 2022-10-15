@@ -27,6 +27,10 @@ class CommentRepository {
         const updatedComment = await CommentModel.findOneAndUpdate({ _id: commentid, userid }, { comment, edited: true }, { new: true })
         return updatedComment
     }
+
+    async deleteComment ({ _id, userid }) {
+        return await CommentModel.findOneAndDelete({ _id, userid })
+    }
 }
 
 module.exports = CommentRepository
