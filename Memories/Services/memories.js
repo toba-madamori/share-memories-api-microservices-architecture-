@@ -37,6 +37,27 @@ class MemoryService {
 
         return memories
     }
+
+    async updateMemory (input) {
+        const { userid, title, tags, image, memoryid } = input
+        let result = {}
+        const update = {}
+        const prevMemory = await this.repository.findOne({ userid, memoryid })
+
+        if (image) {
+            await cloudinary.uploader.destroy(prevMemory.cloudinary_id)
+            result = await cloudinary.uploader.upload(image.path, { folder: 'memory_upload' })
+            update.memory = result.secure_url
+            update.cloudinary_id = result.public_id
+        }
+
+        if (title) update.title = title
+        if (tags) update.tags = tags
+
+        const updatedMemory = await this.repository.updateMemory({ memoryid, update })
+
+        return updatedMemory
+    }
 }
 
 module.exports = MemoryService
