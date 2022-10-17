@@ -19,6 +19,13 @@ module.exports = (app) => {
         res.status(StatusCodes.CREATED).json({ status: 'success', memory })
     })
 
+    app.get('/all', authMiddleware, async (req, res) => {
+        const { userID: userid } = req.user
+        const memories = await service.getAllMemories({ userid })
+
+        res.status(StatusCodes.OK).json({ status: 'success', memories, nbhits: memories.length })
+    })
+
     app.get('/:id', authMiddleware, validator.params(idSchema), async (req, res) => {
         const { id: memoryid } = req.params
 
