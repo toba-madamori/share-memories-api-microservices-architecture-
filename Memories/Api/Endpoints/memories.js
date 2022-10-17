@@ -46,6 +46,14 @@ module.exports = (app) => {
         res.status(StatusCodes.OK).json({ status: 'success', memory })
     })
 
+    app.delete('/:id', authMiddleware, validator.params(idSchema), async (req, res) => {
+        const { id: memoryid } = req.params
+        const { userID: userid } = req.user
+
+        await service.deleteMemory({ memoryid, userid })
+        res.status(StatusCodes.OK).json({ status: 'success', msg: 'memory deleted successfully' })
+    })
+
     app.get('/whoami', (req, res, next) => {
         return res.status(StatusCodes.OK).json({ msg: '/memory : I am Memory Service' })
     })
