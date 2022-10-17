@@ -24,6 +24,12 @@ class MemoryRepository {
 
         return memory
     }
+
+    async findAll ({ userid }) {
+        const memories = await MemoryModel.find({ userid }).select('-createdAt -updatedAt -__v')
+
+        return memories
+    }
 }
 
 module.exports = MemoryRepository
