@@ -30,6 +30,19 @@ class MemoryRepository {
 
         return memories
     }
+
+    async findOne ({ userid, memoryid }) {
+        const memory = await MemoryModel.findOne({ _id: memoryid, userid })
+        if (!memory) throw new NotFoundError('sorry, this memory does not exist')
+
+        return memory
+    }
+
+    async updateMemory ({ memoryid, update }) {
+        const memory = await MemoryModel.findByIdAndUpdate({ _id: memoryid }, update, { new: true, runValidators: true }).select('-createdAt -updatedAt -__v')
+
+        return memory
+    }
 }
 
 module.exports = MemoryRepository
