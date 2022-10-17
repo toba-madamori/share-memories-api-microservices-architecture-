@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 const MemoryModel = require('../Models/memories')
-const { NotFoundError } = require('../../Errors')
+const { NotFoundError, BadRequestError } = require('../../Errors')
 
 // Dealing with data base operations
 class MemoryRepository {
@@ -40,6 +40,13 @@ class MemoryRepository {
 
     async updateMemory ({ memoryid, update }) {
         const memory = await MemoryModel.findByIdAndUpdate({ _id: memoryid }, update, { new: true, runValidators: true }).select('-createdAt -updatedAt -__v')
+
+        return memory
+    }
+
+    async deleteMemory ({ memoryid, userid }) {
+        const memory = await MemoryModel.findOneAndDelete({ _id: memoryid, userid })
+        if (!memory) throw new BadRequestError('method not allowed')
 
         return memory
     }
