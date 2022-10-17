@@ -12,7 +12,13 @@ const idSchema = Joi.object().keys({
     id: Joi.string().hex().length(24).pattern(/^[0-9a-fA-F]{24}$/).required()
 })
 
+const updateMemorySchema = Joi.object().keys({
+    title: Joi.string().trim(true),
+    tags: array
+})
+
 module.exports = {
     newMemorySchema,
-    idSchema
+    idSchema,
+    updateMemorySchema
 }
