@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 const MemoryService = require('../../Services/memories')
 const { StatusCodes } = require('http-status-codes')
-const { newMemorySchema, idSchema } = require('../../Utils/validators')
+const { newMemorySchema, idSchema, updateMemorySchema } = require('../../Utils/validators')
 const { publishReactionEvent } = require('../../Utils/events')
 const validator = require('express-joi-validation').createValidator({})
 const upload = require('../../Utils/multer')
@@ -34,6 +34,16 @@ module.exports = (app) => {
         const response = await publishReactionEvent({ event: 'GET_COMMENTS', data: { memoryid } })
 
         res.status(StatusCodes.OK).json({ status: 'success', memory, comments: response.data.data })
+    })
+
+    app.patch('/update/:id', authMiddleware, upload.single('memory'), validator.params(idSchema), validator.body(updateMemorySchema), async (req, res) => {
+        const { title, tags } = req.body
+        const { id: memoryid } = req.params
+        const image = req.file
+        const { userID: userid } = req.user
+
+        const memory = await service.updateMemory({ userid, title, tags, image, memoryid })
+        res.status(StatusCodes.OK).json({ status: 'success', memory })
     })
 
     app.get('/whoami', (req, res, next) => {
