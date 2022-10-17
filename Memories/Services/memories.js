@@ -58,6 +58,14 @@ class MemoryService {
 
         return updatedMemory
     }
+
+    async deleteMemory (input) {
+        const { memoryid, userid } = input
+        const memory = await this.repository.deleteMemory({ memoryid, userid })
+
+        await cloudinary.uploader.destroy(memory.cloudinary_id)
+        return true
+    }
 }
 
 module.exports = MemoryService
