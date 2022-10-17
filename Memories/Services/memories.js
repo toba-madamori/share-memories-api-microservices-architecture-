@@ -30,6 +30,13 @@ class MemoryService {
         const memory = await this.repository.findMemory({ _id: memoryid })
         return memory
     }
+
+    async getAllMemories (input) {
+        const { userid } = input
+        const memories = await this.repository.findAll({ userid })
+
+        return memories
+    }
 }
 
 module.exports = MemoryService
