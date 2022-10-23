@@ -17,8 +17,16 @@ const updateMemorySchema = Joi.object().keys({
     tags: array
 })
 
+const searchSchema = Joi.object().keys({
+    title: Joi.string().trim(true),
+    tags: Joi.string().trim(true),
+    page: Joi.number().integer(),
+    limit: Joi.number().integer()
+})
+
 module.exports = {
     newMemorySchema,
     idSchema,
-    updateMemorySchema
+    updateMemorySchema,
+    searchSchema
 }
