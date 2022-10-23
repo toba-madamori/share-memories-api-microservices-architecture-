@@ -50,6 +50,11 @@ class MemoryRepository {
 
         return memory
     }
+
+    async searchMemories ({ skip, limit, queryObject }) {
+        const memories = await MemoryModel.find(queryObject).select('-createdAt -updatedAt -__v').skip(skip).limit(limit)
+        return memories
+    }
 }
 
 module.exports = MemoryRepository
