@@ -66,6 +66,21 @@ class MemoryService {
         await cloudinary.uploader.destroy(memory.cloudinary_id)
         return true
     }
+
+    async searchMemories (input) {
+        let { title, tags, page, limit } = input
+        const queryObject = {}
+
+        if (title) queryObject.title = { $regex: title, $options: 'i' }
+        if (tags) queryObject.tags = { $in: tags }
+
+        page = Number(page) || 1
+        limit = Number(limit) || 0
+        const skip = (page - 1) * limit
+
+        const memories = await this.repository.searchMemories({ skip, limit, queryObject })
+        return memories
+    }
 }
 
 module.exports = MemoryService
