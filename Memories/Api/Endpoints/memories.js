@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 const MemoryService = require('../../Services/memories')
 const { StatusCodes } = require('http-status-codes')
-const { newMemorySchema, idSchema, updateMemorySchema } = require('../../Utils/validators')
+const { newMemorySchema, idSchema, updateMemorySchema, searchSchema } = require('../../Utils/validators')
 const { publishReactionEvent } = require('../../Utils/events')
 const validator = require('express-joi-validation').createValidator({})
 const upload = require('../../Utils/multer')
@@ -22,6 +22,13 @@ module.exports = (app) => {
     app.get('/all', authMiddleware, async (req, res) => {
         const { userID: userid } = req.user
         const memories = await service.getAllMemories({ userid })
+
+        res.status(StatusCodes.OK).json({ status: 'success', memories, nbhits: memories.length })
+    })
+
+    app.get('/search', validator.query(searchSchema), async (req, res) => {
+        const { title, tags, page, limit } = req.query
+        const memories = await service.searchMemories({ title, tags, page, limit })
 
         res.status(StatusCodes.OK).json({ status: 'success', memories, nbhits: memories.length })
     })
