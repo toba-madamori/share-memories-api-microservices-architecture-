@@ -2,6 +2,7 @@
 const { MemoryRepository } = require('../Database')
 const cloudinary = require('../Utils/cloudinary')
 const { BadRequestError } = require('../Errors')
+const logger = require('../Utils/logger')
 
 // All Business logic will be here
 class MemoryService {
@@ -80,6 +81,63 @@ class MemoryService {
 
         const memories = await this.repository.searchMemories({ skip, limit, queryObject })
         return memories
+    }
+
+    async addLike (input) {
+        const { memoryid } = input
+
+        await this.repository.findMemory({ _id: memoryid })
+        const memory = await this.repository.addLike({ memoryid })
+
+        return memory
+    }
+
+    async removeLike (input) {
+        const { memoryid } = input
+
+        await this.repository.findMemory({ _id: memoryid })
+        const memory = await this.repository.removeLike({ memoryid })
+
+        return memory
+    }
+
+    async addDislike (input) {
+        const { memoryid } = input
+
+        await this.repository.findMemory({ _id: memoryid })
+        const memory = await this.repository.addDislike({ memoryid })
+
+        return memory
+    }
+
+    async removeDislike (input) {
+        const { memoryid } = input
+
+        await this.repository.findMemory({ _id: memoryid })
+        const memory = await this.repository.removeDislike({ memoryid })
+
+        return memory
+    }
+
+    async SubscribeEvents (payload) {
+        logger.info('============= Triggering Memory Events =============')
+
+        const { event, data } = payload
+
+        const { memoryid } = data
+
+        switch (event) {
+        case 'ADD_LIKE':
+            return await this.addLike({ memoryid })
+        case 'REMOVE_LIKE':
+            return await this.removeLike({ memoryid })
+        case 'ADD_DISLIKE':
+            return await this.addDislike({ memoryid })
+        case 'REMOVE_DISLIKE':
+            return await this.removeDislike({ memoryid })
+        default:
+            break
+        }
     }
 }
 
