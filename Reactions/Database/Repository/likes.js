@@ -12,6 +12,11 @@ class LikeRepository {
         const newLike = await like.save()
         return newLike
     }
+
+    async findAndDelete ({ userid, memoryid }) {
+        const like = await LikeModel.findOneAndDelete({ userid, memoryid })
+        return like
+    }
 }
 
 module.exports = LikeRepository

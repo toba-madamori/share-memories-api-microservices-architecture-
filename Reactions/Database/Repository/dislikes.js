@@ -12,6 +12,11 @@ class DislikeRepository {
         const newDislike = await dislike.save()
         return newDislike
     }
+
+    async findAndDelete ({ userid, memoryid }) {
+        const dislike = await DislikeModel.findOneAndDelete({ userid, memoryid })
+        return dislike
+    }
 }
 
 module.exports = DislikeRepository
