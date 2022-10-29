@@ -50,6 +50,15 @@ module.exports = (app) => {
         res.status(StatusCodes.OK).json({ status: 'success', response })
     })
 
+    app.post('/dislike/:id', authMiddleware, validator.params(idSchema), async (req, res) => {
+        const { id: memoryid } = req.params
+        const { userID: userid } = req.user
+
+        const response = await service.dislikeMemory({ userid, memoryid })
+
+        res.status(StatusCodes.OK).json({ status: 'success', response })
+    })
+
     app.get('/whoami', (req, res, next) => {
         return res.status(StatusCodes.OK).json({ msg: '/reactions : I am Reactions Service' })
     })
