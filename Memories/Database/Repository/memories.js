@@ -55,6 +55,26 @@ class MemoryRepository {
         const memories = await MemoryModel.find(queryObject).select('-createdAt -updatedAt -__v').skip(skip).limit(limit)
         return memories
     }
+
+    async addLike ({ memoryid }) {
+        const memory = await MemoryModel.findByIdAndUpdate({ _id: memoryid }, { $inc: { likes: 1 } }, { new: true, runValidators: true })
+        return memory
+    }
+
+    async removeLike ({ memoryid }) {
+        const memory = await MemoryModel.findByIdAndUpdate({ _id: memoryid }, { $inc: { likes: -1 } }, { new: true, runValidators: true })
+        return memory
+    }
+
+    async addDislike ({ memoryid }) {
+        const memory = await MemoryModel.findByIdAndUpdate({ _id: memoryid }, { $inc: { dislikes: 1 } }, { new: true, runValidators: true })
+        return memory
+    }
+
+    async removeDislike ({ memoryid }) {
+        const memory = await MemoryModel.findByIdAndUpdate({ _id: memoryid }, { $inc: { dislikes: -1 } }, { new: true, runValidators: true })
+        return memory
+    }
 }
 
 module.exports = MemoryRepository
