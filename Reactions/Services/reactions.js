@@ -65,6 +65,32 @@ class ReactionsService {
         return newLike
     }
 
+    async dislikeMemory (input) {
+        const { userid, memoryid } = input
+
+        // checking if the user has disliked the memory before
+        const prevDislike = await this.dislikeRepository.findAndDelete({ userid, memoryid })
+        if (prevDislike) {
+            // removing the dislike from the memory
+            await publishMemoryEvent({ event: 'REMOVE_DISLIKE', data: { memoryid } })
+            const message = 'removed the dislike'
+            return message
+        }
+
+        // checking if the user has liked the memory before
+        const prevLike = await this.likeRepository.findAndDelete({ userid, memoryid })
+        if (prevLike) {
+            // removing the like from the memory
+            await publishMemoryEvent({ event: 'REMOVE_LIKE', data: { memoryid } })
+            const message = 'removed the like'
+            return message
+        }
+
+        await publishMemoryEvent({ event: 'ADD_DISLIKE', data: { memoryid } })
+        const newDislike = await this.dislikeRepository.createDislike({ userid, memoryid })
+        return newDislike
+    }
+
     async SubscribeEvents (payload) {
         logger.info('============= Triggering Reactions Events =============')
 
