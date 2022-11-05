@@ -6,6 +6,7 @@ require('express-async-errors')
 const express = require('express')
 const app = express()
 const userApi = require('../Api/Endpoints/user.auth')
+const appEvents = require('../Api/Endpoints/app-events')
 
 // extra security packages
 const cors = require('cors')
@@ -33,10 +34,13 @@ app.get('/', (req, res) => {
     res.send('<h4>Authentication service is up and running at </h4><a href="">Documentation</a>')
 })
 
+// routes
+
+// listen to events
+appEvents(app)
+
 // user api
 userApi(app)
-
-// routes
 
 app.use(errorHandler)
 app.use(notFound)
