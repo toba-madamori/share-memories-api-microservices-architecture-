@@ -2,7 +2,7 @@ const UserService = require('../../Services/users')
 const { StatusCodes } = require('http-status-codes')
 
 module.exports = (app) => {
-    const service = UserService()
+    const service = new UserService()
 
     app.use('/app-events', async (req, res, next) => {
         const { payload } = req.body
