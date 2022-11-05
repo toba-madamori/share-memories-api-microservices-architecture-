@@ -95,16 +95,40 @@ class UserService {
         return user
     }
 
+    async updateUser (input) {
+        const { userid, name, email, status, avatar } = input
+
+        const user = await this.repository.findUser({ _id: userid })
+        const update = {}
+
+        if (name) update.name = name
+        if (email) update.email = email
+        if (avatar) {
+            await cloudinary.uploader.destroy(user.cloudinary_id)
+            const newImage = await cloudinary.uploader.upload(avatar.path, { folder: 'avatar_upload' })
+            update.avatar = newImage.secure_url
+            update.cloudinary_id = newImage.public_id
+        }
+        if (status) update.status = status
+
+        let updatedUser = await this.repository.updateUser({ _id: userid, update })
+        updatedUser = { email: updatedUser.email, name: updatedUser.name, avatar: updatedUser.avatar, status: updatedUser.status }
+
+        return updatedUser
+    }
+
     async SubscribeEvents (payload) {
         logger.info('============= Triggering Auth Events =============')
 
         const { event, data } = payload
 
-        const { userid } = data
+        const { userid, name, email, status, avatar } = data
 
         switch (event) {
         case 'GET_USER':
             return await this.getUser({ userid })
+        case 'UPDATE_USER':
+            return await this.updateUser({ userid, name, email, status, avatar })
         default:
             break
         }
