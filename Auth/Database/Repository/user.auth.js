@@ -46,6 +46,11 @@ class UserRepository {
         const user = await UserModel.findByIdAndUpdate({ _id }, { password: newPassword })
         return user
     }
+
+    async updateUser ({ _id, update }) {
+        const user = await UserModel.findByIdAndUpdate({ _id }, update, { new: true, runValidators: true })
+        return user
+    }
 }
 
 module.exports = UserRepository
