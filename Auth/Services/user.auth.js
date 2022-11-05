@@ -8,6 +8,7 @@ const { signupMailOptions } = require('../Templates/email/signupMail')
 const { resetPasswordOptions } = require('../Templates/email/forgotPasswordMail')
 const path = require('path')
 const { UnauthenticatedError } = require('../Errors')
+const logger = require('../Utils/logger')
 
 const defaultAvatarPath = path.join(__dirname, '../public/default-profile-image.png')
 
@@ -84,6 +85,29 @@ class UserService {
 
         user = await this.repository.updatePassword({ _id, newPassword })
         return user
+    }
+
+    async getUser (input) {
+        const { userid } = input
+        let user = await this.repository.findUser({ _id: userid })
+
+        user = { email: user.email, name: user.name, avatar: user.avatar, status: user.status }
+        return user
+    }
+
+    async SubscribeEvents (payload) {
+        logger.info('============= Triggering Auth Events =============')
+
+        const { event, data } = payload
+
+        const { userid } = data
+
+        switch (event) {
+        case 'GET_USER':
+            return await this.getUser({ userid })
+        default:
+            break
+        }
     }
 }
 
