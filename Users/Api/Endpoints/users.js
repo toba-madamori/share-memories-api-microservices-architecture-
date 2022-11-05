@@ -2,10 +2,11 @@
 /* eslint-disable camelcase */
 const UserService = require('../../Services/users')
 const { StatusCodes } = require('http-status-codes')
-const { idSchema } = require('../../Utils/validators')
+const { updateUserSchema } = require('../../Utils/validators')
 const validator = require('express-joi-validation').createValidator({})
 const authMiddleware = require('../Middleware/authentication')
 const { publishAuthEvent } = require('../../Utils/events')
+const upload = require('../../Utils/multer')
 
 module.exports = (app) => {
     const service = new UserService()
@@ -15,6 +16,17 @@ module.exports = (app) => {
 
         // call to auth-service for user profile
         const response = await publishAuthEvent({ event: 'GET_USER', data: { userid } })
+
+        res.status(StatusCodes.OK).json({ status: 'success', user: response.data.data })
+    })
+
+    app.patch('/profile/update', authMiddleware, upload.single('avatar'), validator.body(updateUserSchema), async (req, res) => {
+        const { name, email, status } = req.body
+        const avatar = req.file
+        const { userID: userid } = req.user
+
+        // call to auth-service for user profile
+        const response = await publishAuthEvent({ event: 'UPDATE_USER', data: { userid, name, email, status, avatar } })
 
         res.status(StatusCodes.OK).json({ status: 'success', user: response.data.data })
     })
