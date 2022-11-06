@@ -75,6 +75,11 @@ class MemoryRepository {
         const memory = await MemoryModel.findByIdAndUpdate({ _id: memoryid }, { $inc: { dislikes: -1 } }, { new: true, runValidators: true })
         return memory
     }
+
+    async deleteOne ({ memoryid }) {
+        const memory = await MemoryModel.findByIdAndDelete({ _id: memoryid })
+        return memory
+    }
 }
 
 module.exports = MemoryRepository
