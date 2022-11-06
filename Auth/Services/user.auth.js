@@ -117,6 +117,13 @@ class UserService {
         return updatedUser
     }
 
+    async deleteUser (input) {
+        const { userid } = input
+
+        const user = await this.repository.deleteUser({ userid })
+        await cloudinary.uploader.destroy(user.cloudinary_id)
+    }
+
     async SubscribeEvents (payload) {
         logger.info('============= Triggering Auth Events =============')
 
@@ -129,6 +136,8 @@ class UserService {
             return await this.getUser({ userid })
         case 'UPDATE_USER':
             return await this.updateUser({ userid, name, email, status, avatar })
+        case 'DELETE_USER':
+            return await this.deleteUser({ userid })
         default:
             break
         }
