@@ -3,6 +3,7 @@ const { MemoryRepository } = require('../Database')
 const cloudinary = require('../Utils/cloudinary')
 const { BadRequestError } = require('../Errors')
 const logger = require('../Utils/logger')
+const { publishReactionEvent } = require('../Utils/events')
 
 // All Business logic will be here
 class MemoryService {
@@ -119,12 +120,25 @@ class MemoryService {
         return memory
     }
 
+    async deleteMemories (input) {
+        const { userid } = input
+
+        const memories = await this.repository.findAll({ userid })
+        for await (const memory of memories) {
+            Promise.all([
+                await publishReactionEvent({ event: 'DELETE_COMMENTS_MEMORYID', data: { memoryid: memory._id } }),
+                await cloudinary.uploader.destroy(memory.cloudinary_id),
+                await this.repository.deleteOne({ memoryid: memory._id })
+            ])
+        }
+    }
+
     async SubscribeEvents (payload) {
         logger.info('============= Triggering Memory Events =============')
 
         const { event, data } = payload
 
-        const { memoryid } = data
+        const { memoryid, userid } = data
 
         switch (event) {
         case 'ADD_LIKE':
@@ -135,6 +149,8 @@ class MemoryService {
             return await this.addDislike({ memoryid })
         case 'REMOVE_DISLIKE':
             return await this.removeDislike({ memoryid })
+        case 'DELETE_MEMORIES':
+            return await this.deleteMemories({ userid })
         default:
             break
         }
