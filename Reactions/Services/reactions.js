@@ -91,16 +91,30 @@ class ReactionsService {
         return newDislike
     }
 
+    async deleteCommentMemoryid (input) {
+        const { memoryid } = input
+        return await this.commentRepository.deleteCommentMemoryid({ memoryid })
+    }
+
+    async deleteCommentUserid (input) {
+        const { userid } = input
+        return await this.commentRepository.deleteCommentUserid({ userid })
+    }
+
     async SubscribeEvents (payload) {
         logger.info('============= Triggering Reactions Events =============')
 
         const { event, data } = payload
 
-        const { memoryid } = data
+        const { memoryid, userid } = data
 
         switch (event) {
         case 'GET_COMMENTS':
             return await this.getComments({ memoryid })
+        case 'DELETE_COMMENTS_MEMORYID':
+            return await this.deleteCommentMemoryid({ memoryid })
+        case 'DELETE_COMMENTS_USERID':
+            return await this.deleteCommentUserid({ userid })
         default:
             break
         }
