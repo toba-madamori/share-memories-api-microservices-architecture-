@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 const UserModel = require('../Models/user.auth')
-const { NotFoundError } = require('../../Errors')
+const { NotFoundError, BadRequestError } = require('../../Errors')
 
 // Dealing with data base operations
 class UserRepository {
@@ -49,6 +49,13 @@ class UserRepository {
 
     async updateUser ({ _id, update }) {
         const user = await UserModel.findByIdAndUpdate({ _id }, update, { new: true, runValidators: true })
+        return user
+    }
+
+    async deleteUser ({ userid }) {
+        const user = await UserModel.findByIdAndDelete({ _id: userid })
+        if (!user) throw new BadRequestError('method not allowed')
+
         return user
     }
 }
