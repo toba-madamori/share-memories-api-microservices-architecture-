@@ -5,7 +5,7 @@ const { StatusCodes } = require('http-status-codes')
 const { updateUserSchema } = require('../../Utils/validators')
 const validator = require('express-joi-validation').createValidator({})
 const authMiddleware = require('../Middleware/authentication')
-const { publishAuthEvent } = require('../../Utils/events')
+const { publishAuthEvent, publishMemoryEvent, publishReactionEvent } = require('../../Utils/events')
 const upload = require('../../Utils/multer')
 
 module.exports = (app) => {
@@ -29,6 +29,18 @@ module.exports = (app) => {
         const response = await publishAuthEvent({ event: 'UPDATE_USER', data: { userid, name, email, status, avatar } })
 
         res.status(StatusCodes.OK).json({ status: 'success', user: response.data.data })
+    })
+
+    app.delete('/profile/delete', authMiddleware, async (req, res) => {
+        const { userID: userid } = req.user
+
+        Promise.all([
+            await publishAuthEvent({ event: 'DELETE_USER', data: { userid } }),
+            await publishMemoryEvent({ event: 'DELETE_MEMORIES', data: { userid } }),
+            await publishReactionEvent({ event: 'DELETE_COMMENTS_USERID', data: { userid } })
+        ])
+
+        res.status(StatusCodes.OK).json({ status: 'success', msg: 'account deleted successfully' })
     })
 
     app.get('/whoami', (req, res, next) => {
